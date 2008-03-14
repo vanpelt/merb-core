@@ -204,6 +204,7 @@ module Merb::RenderMixin
       end.join
     else
       @_merb_partial_locals = opts
+      @_merb_partial_locals["#{as}_counter".to_sym] = 0
       sent_template = send(template_method)
     end
     @_merb_partial_locals = @_old_partial_locals.pop
