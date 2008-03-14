@@ -173,6 +173,13 @@ module Merb::RenderMixin
   #
   # The "_foo" partial will be called, relative to the current controller,
   # with a local variable of +hello+ inside of it, assigned to @object.
+  #
+  #   partial :bar, :with => [3,2,1]
+  #
+  # The "_bar" partial will be called, relative to the current controller
+  # 3 times with a local variable of +bar+ being each element of the array,
+  # and a local variable +bar_counter+ being the position of the element in
+  # the array
   def partial(template, opts={})
 
     # partial :foo becomes "#{controller_name}/_foo"
@@ -189,8 +196,10 @@ module Merb::RenderMixin
       with = opts.delete(:with)
       as = opts.delete(:as) || template_location.match(%r[.*/_([^\.]*)])[1]
       @_merb_partial_locals = opts
+      i = -1
       sent_template = [with].flatten.map do |temp|
         @_merb_partial_locals[as.to_sym] = temp
+        @_merb_partial_locals["#{as}_counter".to_sym] = (i += 1)
         send(template_method)
       end.join
     else
